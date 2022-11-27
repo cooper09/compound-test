@@ -13,13 +13,14 @@ const { logBalances } = require("./modules/logBalances");
 /***********************************************************************************/ 
 // Mainnet Contract for cDAI (https://compound.finance/docs#networks)
 const cTokenContractAddress = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
-const cTokenAbiJson = require("./abis/cTokenAbi.json");
+const cTokenAbiJson = require("./abis/cTokenAbi2.json");
+
 const cTokenContract = new ethers.Contract(cTokenContractAddress, cTokenAbiJson, account)
 
 //Get Dai contract
 const underlyingContractAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const erc20AbiJson = require('./abis/ERC20.json');
-const underlyingDaiContract = new ethers.Contract(underlyingContractAddress, erc20AbiJson, account);
+const underlyingContract = new ethers.Contract(underlyingContractAddress, erc20AbiJson, account);
 
 //Get USDC contract
 const underlyingUSDCContractAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -38,31 +39,39 @@ const start = async () => {
     console.log("network id: ", networkAddr )
 
 /********************************************************************** */
-    let cTokenBalance = +(await cTokenContract.callStatic.balanceOf(account.address)) / 1e8;
-    console.log(`My wallet's c${assetName} Token Balance:`, cTokenBalance);
+    // cooper s - account is our universal wallet)
+    const myWalletAddress = account.address;
 
-    let erCurrent = await cTokenContract.callStatic.exchangeRateCurrent();
-    let exchangeRate = +erCurrent / Math.pow(10, 18 + underlyingDecimals - 8);
-    console.log(`Current exchange rate from c${assetName} to ${assetName}:`, exchangeRate, '\n');
-  
-    console.log(`Redeeming the c${assetName} for ${assetName}...`);
+    const underlyingContractAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 
-    await logBalances();
+    const assetName = 'DAI'; // for the log output lines
+    const underlyingDecimals = 18; // Number of decimals defined in this ERC20 token's contract
 
     // redeem (based on cTokens)
   console.log(`Exchanging all c${assetName} based on cToken amount...`, '\n');
 
   /* cooper s - original transaction */
+  /***************************************/
 
-  try {
-    //tx = await cTokenContract.callStatic.redeem(cTokenBalance * 1e8);
-    tx = await cTokenContract.callStatic.redeem(parseInt(cTokenBalance) * 1e8);
-    //await tx.wait(1); // wait until the transaction has 1 confirmation on the blockchain
-  } catch (e) {
-    console.log("Call redeem failed: ", e.message)
-  }
+// Mainnet Contract for the underlying token https://etherscan.io/address/0x6b175474e89094c44da98b954eedeac495271d0f
 
-/*
+  // See how many underlying ERC-20 tokens are in my wallet before we supply
+  const tokenBalance = await underlyingContract.callStatic.balanceOf(myWalletAddress) / 1e18;
+  console.log(`My wallet's ${assetName} Token Balance:`, tokenBalance);
+
+  let cTokenBalance = +(await cTokenContract.callStatic.balanceOf(myWalletAddress)) / 1e8;
+  console.log(`My wallet's c${assetName} Token Balance:`, cTokenBalance);
+
+  console.log(`Exchanging all c${assetName} based on cToken amount...`, '\n');
+
+  const gasPrice = await provider.getGasPrice();
+  const getCode =  await provider.getCode('0x5d3a536e4d6dbd6114cc1ead35777bab948e3643')
+ // console.log("code exists: ", getCode )
+
+  // cooper s - the redeem I'm trying to get to work....
+  //tx = await cTokenContract.redeem(cTokenBalance * 1e8);
+
+      /*
 const tx = {
     from: account.address,
     to: acct2, 
@@ -73,13 +82,19 @@ const tx = {
     }//end 
 */
 
-    console.log("Sent as transaction...")
-
-
+    //tx = await cTokenContract.callStatic.redeem(parseInt(cTokenBalance) * 1e8, { 
+    tx = await cTokenContract.redeem(cTokenBalance * 1e8, {
+      gasLimit: 5000000, 
+      gasPrice,
+      nonce: provider.getTransactionCount(account.address, 'latest')
+      });
+    //*/
+    await tx.wait(1); // wait until the transaction has 1 confirmation on the blockchain
+  
 await logBalances();
 
 process.exit(0);
-}
+}//end start
 
 /***********************************************************************************/ 
 

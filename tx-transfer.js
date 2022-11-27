@@ -3,9 +3,6 @@ const { Wallet } = require("ethers");
 const { ethers } = require("hardhat");
 const dotenv = require('dotenv').config(); 
 
-//const rpcURL = 'http://localhost:8545';
-//const provider = new ethers.providers.JsonRpcProvider( rpcURL);
-
 /***********************************************************************************/ 
 // utils generic ethers tools for formatting 
 const {toBytes32, toString, toWei, toEther, toRound } = require('./modules/utils');

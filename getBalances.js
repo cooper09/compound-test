@@ -8,7 +8,7 @@ const Compound = require('@compound-finance/compound-js');
 
 // set up prvider, primary and secondary addresses
 const {toBytes32, toString, toWei, toEther, toRound } = require('./modules/utils');
-const {provider, acct1, acct2, privateKey, signer, account } = require("./modules/accts");
+const {provider, acct1, acct2, hardhatAcct, privateKey, signer, account } = require("./modules/accts");
 
 let config = require("./config");
 /******************************************************************** */
@@ -82,6 +82,9 @@ const start = async () =>{
 
     let bal2 = await Compound.eth.getBalance(acct2, provider )
     console.log(`Account 2 Compoound Eth balance: ${acct2} `, bal2 /1e18);
+
+    let bal3 = Compound.eth.getBalance(hardhatAcct, provider )
+    console.log(`Hardhat Account Compoound Eth balance: ${hardhatAcct} `, bal3 /1e18);
 
     await logBalances();
 

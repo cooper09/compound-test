@@ -51,9 +51,11 @@ const start = async () => {
   const underlyingUSDCToSupply = 10 * Math.pow(10, underlyingUSDCDecimals);
   console.log("underlying USDC supply: ", underlyingUSDCToSupply );
 
-    //const underlyingDaiToSupply = 10 * Math.pow(10, underlyingDecimals); //supply 10 Dai
+  //coper s - select the amount you want to supply from here. Be careful when you're on mainnet
+    //const underlyingDaiToSupply = 1 * Math.pow(10, underlyingDecimals); //supply 1 Dai
+    const underlyingDaiToSupply = 10 * Math.pow(10, underlyingDecimals); //supply 10 Dai
     //const underlyingDaiToSupply = 50 * Math.pow(10, underlyingDecimals);  //supply 50 Dai
-    const underlyingDaiToSupply = 100 * Math.pow(10, underlyingDecimals);  //supply 100 Dai
+    //const underlyingDaiToSupply = 100 * Math.pow(10, underlyingDecimals);  //supply 100 Dai
     console.log("underlying Dai supply: ", underlyingDaiToSupply / 1e6);
 
   // Tell the contract to allow 10 tokens to be taken by the cToken contract
@@ -88,12 +90,14 @@ const start = async () => {
     console.log(`Redeeming the c${assetName} for ${assetName}...`);
 
     await logBalances();
-
+/*
     // redeem (based on cTokens)
   console.log(`Exchanging all c${assetName} based on cToken amount...`, '\n');
+  //cooper s - shouldn't these be turned on
   //tx = await cTokenContract.redeem(cTokenBalance * 1e8);
-  //await tx.wait(1); // wait until the transaction has 1 confirmation on the blockchain
-
+  tx = await cTokenContract.redeem(parseInt(cTokenBalance) * 1e8, { gasLimit: 5000000  });
+  await tx.wait(1); // wait until the transaction has 1 confirmation on the blockchain
+*/
     
     process.exit(0);
 }

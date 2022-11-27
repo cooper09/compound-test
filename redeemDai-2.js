@@ -14,6 +14,7 @@ const { logBalances } = require("./modules/logBalances");
 // Mainnet Contract for cDAI (https://compound.finance/docs#networks)
 const cTokenContractAddress = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 const cTokenAbiJson = require("./abis/cTokenAbi.json");
+
 const cTokenContract = new ethers.Contract(cTokenContractAddress, cTokenAbiJson, account)
 
 //Get Dai contract
@@ -35,34 +36,33 @@ const start = async () => {
     console.log("Redeem me, baby...");
 
     const networkAddr = await provider.getNetwork();
-    console.log("network id: ", networkAddr )
+    console.log("network id: ", networkAddr );
 
-/********************************************************************** */
-    let cTokenBalance = +(await cTokenContract.callStatic.balanceOf(account.address)) / 1e8;
-    console.log(`My wallet's c${assetName} Token Balance:`, cTokenBalance);
+    /***************************************************** */  
+    // Main Net Contract for cETH (the supply process is different for cERC20 tokens)
+const contractAddress = '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5';
+const abiJson = './abis/cTokenbi.json' ;
+//const cEthContract = new web3.eth.Contract(abiJson, contractAddress);
 
-    let erCurrent = await cTokenContract.callStatic.exchangeRateCurrent();
-    let exchangeRate = +erCurrent / Math.pow(10, 18 + underlyingDecimals - 8);
-    console.log(`Current exchange rate from c${assetName} to ${assetName}:`, exchangeRate, '\n');
-  
-    console.log(`Redeeming the c${assetName} for ${assetName}...`);
+    const cEthContract = new ethers.Contract(contractAddress, abiJson, account);
+    let cTokenBalance = 10;
+    const myWalletAddress = account.address;
 
-    await logBalances();
-
-    // redeem (based on cTokens)
-  console.log(`Exchanging all c${assetName} based on cToken amount...`, '\n');
-
-  /* cooper s - original transaction */
-
-  try {
-    //tx = await cTokenContract.callStatic.redeem(cTokenBalance * 1e8);
-    tx = await cTokenContract.callStatic.redeem(parseInt(cTokenBalance) * 1e8);
-    //await tx.wait(1); // wait until the transaction has 1 confirmation on the blockchain
-  } catch (e) {
-    console.log("Call redeem failed: ", e.message)
-  }
-
+    console.log('Exchanging all cETH based on cToken amount...', '\n');
 /*
+    await cEthContract.callStatic.redeem(cTokenBalance * 1e8).send({
+        from: myWalletAddress,
+        gasLimit: ethers.utils.hexlify(100000), //100 gwei,
+        gasPrice: ethers.utils.hexlify(20000000000), // use ethgasstation.info (mainnet only)
+    });
+*/
+    tx = await cEthContract.callStatic.redeem(parseInt(cTokenBalance) * 1e8)
+        .then(result => {
+            console.log("redeem result: ", result )
+        })
+    //await tx.wait(1);
+
+    /*
 const tx = {
     from: account.address,
     to: acct2, 
@@ -73,12 +73,9 @@ const tx = {
     }//end 
 */
 
-    console.log("Sent as transaction...")
+    await logBalances();
 
-
-await logBalances();
-
-process.exit(0);
+    process.exit(0);
 }
 
 /***********************************************************************************/ 

@@ -119,13 +119,13 @@ console.log("borrow eth for: ", acct  )
   console.log("maxBorrow: ", maxBorrow );
 
   //const canDo = await cEth.borrow(ethers.utils.parseEther(maxBorrow.toString()));
-    const canDo = BigNumber.from(parseInt(maxBorrow));
-  console.log("can Do: ", ethers.utils.formatUnits(canDo ))
+    //const canDo = BigNumber.from(parseInt(maxBorrow));
+  //console.log("can Do: ", ethers.utils.formatUnits(canDo ))
 
 // cooper s - convert the maximum you can can borrow from $ to Eth
 
  // Let's try to borrow 0.002 ETH (or another amount far below the borrow limit)
-  const ethToBorrow = 0.01295 //0.03026 //0.002;
+  const ethToBorrow = 0.002 //0.01295 //0.03026 //0.002;
   console.log(`\nNow attempting to borrow ${ethToBorrow} ETH...`);
  /* cooper s  - don't want to borrow too much too soon... */
   const borrow = await cEth.borrow(ethers.utils.parseEther(ethToBorrow.toString()));
@@ -153,7 +153,7 @@ console.log("borrow eth for: ", acct  )
     
     //cooper s - transfer borrowed Eth to acct1
     console.log("amount borrowed: ", balance )
-/*/
+//* cooper s = make sure this transaciton is uncommented when running in producton
     const tx = {
         from: account.address,
         to: acct, 
@@ -171,7 +171,7 @@ console.log("borrow eth for: ", acct  )
             console.log("Send transaction failed: ", e.message);
             process.exit(1);
         }
-//*/
+//
         await logBalances();
 
 // cooper s - start repay here...
