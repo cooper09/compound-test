@@ -4,6 +4,7 @@ node_modules
 node_modules/*
 .env
 .env.original
+
 .gitignore
 .DS_Store
 
