@@ -10,7 +10,7 @@ const Compound = require('@compound-finance/compound-js');
 const {toBytes32, toString, toWei, toEther, toRound } = require('./modules/utils');
 const {provider, acct1, acct2, hardhatAcct, privateKey, signer, account } = require("./modules/accts");
 
-let config = require("./config");
+//let config = require("./config");
 /******************************************************************** */
 const {
     cEthAbi,

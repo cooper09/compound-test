@@ -1,0 +1,35 @@
+# Compound scripts to
+ 1) supply Dai (or any ERC20 token)to Compound protocol
+ 2) borrow ETH using the supplied collateral
+ 3) pay back Borrowed assets
+ 4) redeem supplied collateral
+
+Original scripts by Adam Bravosa:
+supply example: https://github.com/compound-developers/compound-supply-examples/blob/master/examples-js/ethers-js/supply-erc20.js
+
+borrow example: https://github.com/compound-developers/compound-borrow-examples/blob/master/examples-js/ethers-js/borrow-erc20-with-eth-collateral.js
+
+The app currently supports ETH and DAI. The app runs a Hardhat fork of Ethereum mainnet and each script is run seperately. 
+
+The provider and accounts which supply, pay and redeem are in the file modules/accts.js
+(Actual values are in .ENV) but you can see how the provider, wallet and target accounts are available to each script seperatel. 
+
+The JSON RPC provider URL is infura for mainnet and polygon and hardhat for localhost:9545
+
+
+## To run simply run 
+
+node getBalances - show current balance of signer wallet in Eth, Dai and CDai)
+
+node supplyDai - add Dai as collateral to protocol. The default is 10 dai but it can be any amount based on the ammount of dai available (lines 54-59 )
+
+node borrowEth - generate loan from the signer account to "target" acct, ie, if we borrow $10 the funds go to the target account. (lines 128-132)
+
+node repayEth - repays the loan. Pretty much the same as original script except for account access.
+
+## node redeemDai - this is where the trouble starts. Initially, the Dai is redeemed to the signer wallet but eventually if fails with "CANNOT DETERMIN GAS FEE". 
+
+trying to debug the issue I have several versions of redeem with redeemDai.js and redeemDai-3.js as the most tenable while the others are variations on the original. 
+
+```
+
