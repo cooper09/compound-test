@@ -25,17 +25,15 @@ module.exports = {
     artifacts: "./artifacts",
   },
   networks: {
-
     hardhatfork: {
         chainId: 31337,
-        //url: "https://mainnet.infura.io/v3/
+        url: "localhost:8545",
+      },
     mainnet: {
         chainId: 1,
-        
+        url: process.env.MAINNET_URL, // or any other JSON-RPC provider
+        accounts: [process.env.RECEIVER_KEY]
       },
-      matic: {
-        
-      }
-    }
+    }//end networks
 };
 
